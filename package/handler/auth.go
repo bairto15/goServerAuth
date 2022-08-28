@@ -12,8 +12,6 @@ type AuthStruct struct {
 	Token    string `json:"token"`
 }
 
-var token = "der9834ig830tjd94jr32kihgu48ther"
-
 //Аутентификация
 func (h *Handler) Auth(c *gin.Context) {
 	var req AuthStruct
@@ -23,21 +21,13 @@ func (h *Handler) Auth(c *gin.Context) {
 		return
 	}
 
-	if req.Login == "admin" && req.Password == "123789" {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "Администратор",
-			"token":  token,
-		})
-		return
-	} else if req.Login == "user" && req.Password == "789789" {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "Пользователь",
-			"token":  token,
-		})
+	token, err := h.services.Autorization.GenerateToken(req.Login, req.Password)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(203, gin.H{
-		"description": "Не правильный логин или пароль",
+	c.JSON(http.StatusOK, gin.H{
+		"token": token,
 	})
 }

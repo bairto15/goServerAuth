@@ -1,14 +1,23 @@
 package service
 
-import "goServerAuth/package/repository"
+import (
+	"goServerAuth/package/repository"
+	"goServerAuth/structures"
+)
 
-type SendContent interface {
+type Autorization interface {
+	CreateUser(user structures.User) (int, error)
+	GenerateToken(login, password string) (string, error)
+	ParseToken(token string) (int, error)
+	GetUsers(id int) ([]structures.User, error)
 }
 
 type Service struct {
-	SendContent
+	Autorization
 }
 
 func NewService(repos *repository.Repository) *Service {
-	return &Service{}
+	return &Service{
+		Autorization: NewAuthService(repos.Autorization),
+	}
 }

@@ -1,62 +1,65 @@
 package handler
 
 import (
+	"goServerAuth/structures"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
+//Создание нового пользователя
 func (h *Handler) NewUser(c *gin.Context) {
-	getToken := c.Request.Header["Token"]
-	if len(token) > 0 && getToken[0] == token {
-		c.JSON(http.StatusOK, gin.H{
-			"description": "Новый пользователь создан",
-		})
+	var user structures.User
+	if err := c.BindJSON(&user); err != nil {
+		NewErrorResponse(c, http.StatusBadGateway, err.Error())
 		return
 	}
-	NewErrorResponse(c, http.StatusBadRequest, "Error validate token")
-}
 
-func (h *Handler) GetUser(c *gin.Context) {
-	getToken := c.Request.Header["Token"]
-	if len(token) > 0 && getToken[0] == token {
-		c.JSON(http.StatusOK, gin.H{
-			"description": "Пользователь администратор",
-		})
+	id, err := h.services.Autorization.CreateUser(user)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	NewErrorResponse(c, http.StatusBadRequest, "Error validate token")
+
+	c.JSON(http.StatusOK, gin.H{
+		"id": id,
+	})
 }
 
-func (h *Handler) DeleteUser(c *gin.Context) {
-	getToken := c.Request.Header["Token"]
-	if len(token) > 0 && getToken[0] == token {
-		c.JSON(http.StatusOK, gin.H{
-			"description": "Пользователь удален",
-		})
-		return
-	}
-	NewErrorResponse(c, http.StatusBadRequest, "Error validate token")
-}
-
-func (h *Handler) EditUser(c *gin.Context) {
-	getToken := c.Request.Header["Token"]
-	if len(token) > 0 && getToken[0] == token {
-		c.JSON(http.StatusOK, gin.H{
-			"description": "Данные пользователя изменены",
-		})
-		return
-	}
-	NewErrorResponse(c, http.StatusBadRequest, "Error validate token")
-}
-
+//Список пользователей
 func (h *Handler) GetUsers(c *gin.Context) {
-	getToken := c.Request.Header["Token"]
-	if len(token) > 0 && getToken[0] == token {
-		c.JSON(http.StatusOK, gin.H{
-			"description": "Список пользователей",
-		})
+	userId, err := getUserId(c)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	NewErrorResponse(c, http.StatusBadRequest, "Error validate token")
+
+	listUsers, err := h.services.GetUsers(userId)
+	
+	
+	//---------------------------
+	logrus.Println(listUsers)
 }
+
+//Получить данные пользователя
+func (h *Handler) GetUser(c *gin.Context) {	
+	c.JSON(http.StatusOK, gin.H{
+		"description": "Пользователь администратор",
+	})
+}
+
+//Удалить пользователя
+func (h *Handler) DeleteUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"description": "Пользователь удален",
+	})
+}
+
+//Редактировать данные пользователя
+func (h *Handler) EditUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"description": "Данные пользователя изменены",
+	})
+}
+

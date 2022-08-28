@@ -1,19 +1,21 @@
 package main
 
 import (
-	"github.com/gonutz/w32"
-	"github.com/sirupsen/logrus"
 	"goServerAuth/package/handler"
 	"goServerAuth/package/repository"
 	"goServerAuth/package/service"
 	"goServerAuth/server"
+
+	"github.com/gonutz/w32"
+	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	//Логи в режиме JSON
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 
-	//при запуске build запускается в фоном режиме
+	//при запуске запускается в фоном режиме
 	console := w32.GetConsoleWindow()
 	if console != 0 {
 		_, consoleProcID := w32.GetWindowThreadProcessId(console)
@@ -22,7 +24,19 @@ func main() {
 		}
 	}
 
-	repos := repository.NewRepository()
+	db, err := repository.NewPostgersDB(repository.Store{
+		Host:     "localhost",
+		Port:     "5432",
+		Username: "postgres",
+		Password: "123789",
+		DBName:   "postgres",
+		SSLMode:  "disable",
+	})
+	if err != nil {
+		logrus.Fatalf("Error running PostgerSQL: %s", err.Error())
+	}
+
+	repos := repository.NewRepository(db)
 	service := service.NewService(repos)
 	handlers := handler.NewHandler(service)
 

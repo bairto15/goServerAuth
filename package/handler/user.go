@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 //Создание нового админа
@@ -40,9 +41,11 @@ func (h *Handler) NewUser(c *gin.Context) {
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
-	}	
+	}
+	logrus.Println("userId", userId)
 	user.Root = userId
 	user.Role = "user"
+	logrus.Println("user", user)
 
 	id, err := h.services.Autorization.CreateUser(user)
 	if err != nil {
@@ -68,27 +71,27 @@ func (h *Handler) GetUsers(c *gin.Context) {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"list": listUsers,
 	})
 }
 
 //Получить данные пользователя
-func (h *Handler) GetUser(c *gin.Context) {	
+func (h *Handler) GetUser(c *gin.Context) {
 	id := c.Param("id")
 	userId, err := strconv.Atoi(id)
 	if err != nil {
 		NewErrorResponse(c, http.StatusUnauthorized, "user id invalid type")
 		return
 	}
-	
+
 	user, err := h.services.GetUser(userId)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"user": user,
 	})
@@ -109,10 +112,10 @@ func (h *Handler) EditUser(c *gin.Context) {
 		NewErrorResponse(c, http.StatusBadGateway, err.Error())
 		return
 	}
-	
+
 	//Проверяем админ ли данного пользователя
 	if reqUser.Root != adminId {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "invalid token")
 		return
 	}
 
@@ -124,6 +127,26 @@ func (h *Handler) EditUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"description": "Данные пользователя изменены",
+	})
+}
+
+//Редактировать данные Админа
+func (h *Handler) EditAdmin(c *gin.Context) {
+	//Новые данные с запроса
+	var reqUser structures.User
+	if err := c.BindJSON(&reqUser); err != nil {
+		NewErrorResponse(c, http.StatusBadGateway, err.Error())
+		return
+	}
+
+	err := h.services.EditAdmin(reqUser)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"description": "Данные администратора изменены",
 	})
 }
 
@@ -152,5 +175,3 @@ func (h *Handler) DeleteUser(c *gin.Context) {
 		"description": "Пользователь удален",
 	})
 }
-
-

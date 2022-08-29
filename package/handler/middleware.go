@@ -10,7 +10,7 @@ import (
 
 const userCtx = "userId"
 
-//Валидатся токена и устанвка в хедарах id user для аутентификации
+//Валидатся токена и установка в хедарах id user для аутентификации
 func (h *Handler) UserIdentify(c *gin.Context) {
 	header := c.GetHeader("Token")
 	if header == "" {

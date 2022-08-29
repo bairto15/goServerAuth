@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"fmt"
 	"goServerAuth/structures"
 )
 
@@ -9,7 +8,7 @@ import (
 func (r *AuthPostgres) GetUsers(id int) ([]structures.User, error) {
 	var users []structures.User
 
-	query := fmt.Sprintf("SELECT * FROM %s WHERE root=$1", "users")
+	query := "SELECT * FROM users WHERE root=$1"
 	err := r.db.Select(&users, query, id)
 
 	return users, err
@@ -25,11 +24,18 @@ func (r *AuthPostgres) GetUser(id int) (structures.User, error) {
 	return user, err
 }
 
-//Изменить данные пользователя по id
+//Изменить данные пользователя
 func (r *AuthPostgres) EditUser(user structures.User) error {
-	//query := "UPDATE name, password FROM users SET name=$1, password=$2 WHERE id=$3 AND root=$4"
-	query := "UPDATE users SET name=? password=? WHERE id=? IN (?)"
-	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.Root)
+	query := "UPDATE users SET name=$1, password=$2 WHERE id=$3 AND password=$4"
+	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.OldPassword)
+
+	return err
+}
+
+//Изменить данные админа
+func (r *AuthPostgres) EditAdmin(user structures.User) error {
+	query := "UPDATE admins SET name=$1, password=$2 WHERE id=$3 AND password=$4"
+	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.OldPassword)
 
 	return err
 }

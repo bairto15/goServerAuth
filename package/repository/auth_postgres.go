@@ -45,8 +45,7 @@ func (r *AuthPostgres) CreateUser(user structures.User) (int, error) {
 func (r *AuthPostgres) Auth(login, password string) (structures.User, error) {
 	var user structures.User
 
-	query := fmt.Sprintf(
-		"SELECT admins.id, users.id FROM users INNER JOIN admins ON public.admins.id = public.users.root WHERE (users.login=$1 AND users.password=$2) OR (admins.login=$1 AND admins.password=$2)")
+	query := "SELECT admins.id, users.id FROM users JOIN admins ON admins.id = users.root WHERE (users.login=$1 AND users.password=$2) OR (admins.login=$1 AND admins.password=$2)"
 	err := r.db.Get(&user, query, login, password)
 
 	return user, err

@@ -2,10 +2,9 @@ package structures
 
 type User struct {
 	Id       int    `json:"id" db:"id"`
-	Name     string `json:"name"`
-	Login    string `json:"login"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
-	Root     int    `json:"root"`
-	Сhilds   []int  `json:"childs"`
+	Name     string `json:"name" db:"name"`
+	Login    string `json:"login" db:"login"`
+	Password string `json:"password" db:"password"`
+	Root     int    `json:"root" db:"root"`
+	Role     string `json:"role" db:"role"`
 }

@@ -18,10 +18,16 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 	router.GET("/", h.Hello)
 	router.POST("/auth", h.Auth)
+	
+	admin := router.Group("/admin")
+	{
+		admin.POST("/new", h.NewAdmin)
+	}
+	
 	user := router.Group("/user", h.UserIdentify)
 	{
 		user.POST("/new", h.NewUser)
-		user.PATCH("/:id", h.EditUser)
+		user.PATCH("/edit", h.EditUser)
 		user.DELETE("/:id", h.DeleteUser)
 		user.GET("/:id", h.GetUser)
 		user.GET("/users", h.GetUsers)

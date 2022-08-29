@@ -29,18 +29,41 @@ func NewAuthService(repo repository.Autorization) *AuthService{
 	return &AuthService{repo: repo}
 }
 
+//Создания админа
+func (s *AuthService) CreateAdmin(user structures.User) (int, error) {
+	user.Password = generatePasswordHash(user.Password)
+	return s.repo.CreateAdmin(user)
+}
+
+//Создание пользователя
 func (s *AuthService) CreateUser(user structures.User) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }
 
+//Список дочерних пользователей
 func (s *AuthService) GetUsers(id int) ([]structures.User, error) {
 	return s.repo.GetUsers(id)
 }
 
-//Генерация токена
+//Получить данные пользователя по id
+func (s *AuthService) GetUser(id int) (structures.User, error) {
+	return s.repo.GetUser(id)
+}
+
+//Изменить данные пользователя по id
+func (s *AuthService) EditUser(user structures.User) (error) {
+	return s.repo.EditUser(user)
+}
+
+//Удалить пользователя по id
+func (s *AuthService) DeleteUser(idUser int, idAmin int) (error) {
+	return s.repo.DeleteUser(idUser, idAmin)
+}
+
+//Генерация токена и проверка логина и пароля
 func (s *AuthService) GenerateToken(login, password string) (string, error) {
-	user, err := s.repo.GetUser(login, generatePasswordHash(password))
+	user, err := s.repo.Auth(login, generatePasswordHash(password))
 	if err != nil {
 		return "", err
 	}

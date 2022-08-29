@@ -33,6 +33,7 @@ func (h *Handler) UserIdentify(c *gin.Context) {
 	c.Set(userCtx, userId)
 }
 
+//С хэдера получить id пользователя
 func getUserId(c *gin.Context) (int, error) {
 	id, ok := c.Get(userCtx)
 	if !ok {

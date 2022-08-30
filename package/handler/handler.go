@@ -22,6 +22,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	admin := router.Group("/admin")
 	{
 		admin.POST("/new", h.NewAdmin)
+		admin.PATCH("/edit", h.EditAdmin)
 	}
 	
 	user := router.Group("/user", h.UserIdentify)

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 //Создание нового админа
@@ -109,10 +110,12 @@ func (h *Handler) EditUser(c *gin.Context) {
 		NewErrorResponse(c, http.StatusBadGateway, err.Error())
 		return
 	}
+	logrus.Println(adminId)
+	logrus.Println(reqUser.Root)
 	
 	//Проверяем админ ли данного пользователя
 	if reqUser.Root != adminId {
-		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		NewErrorResponse(c, http.StatusInternalServerError, "Error token id")
 		return
 	}
 
@@ -124,6 +127,27 @@ func (h *Handler) EditUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"description": "Данные пользователя изменены",
+	})
+}
+
+//Редактировать данные Админа
+func (h *Handler) EditAdmin(c *gin.Context) {
+
+	//Новые данные с запроса
+	var reqUser structures.User
+	if err := c.BindJSON(&reqUser); err != nil {
+		NewErrorResponse(c, http.StatusBadGateway, err.Error())
+		return
+	}
+	
+	err := h.services.EditAdmin(reqUser)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"description": "Данные администратора изменены",
 	})
 }
 

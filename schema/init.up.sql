@@ -3,7 +3,8 @@ CREATE TABLE admins
     id serial not null unique,
     name varchar(255) not null,
     login varchar(255) not null unique,
-    password varchar(255) not null
+    password varchar(255) not null,
+    role varchar(255) not null
 );
 
 CREATE TABLE users
@@ -12,5 +13,6 @@ CREATE TABLE users
     name varchar(255) not null,
     login varchar(255) not null unique,
     password varchar(255) not null,
-    root int references admins (id) on delete cascade
+    root int references admins (id) on delete cascade,
+    role varchar(255) not null
 );

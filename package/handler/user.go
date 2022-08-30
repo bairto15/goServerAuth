@@ -115,7 +115,7 @@ func (h *Handler) EditUser(c *gin.Context) {
 
 	//Проверяем админ ли данного пользователя
 	if reqUser.Root != adminId {
-		NewErrorResponse(c, http.StatusInternalServerError, "invalid token")
+		NewErrorResponse(c, http.StatusInternalServerError, "invalid token")		
 		return
 	}
 
@@ -132,13 +132,14 @@ func (h *Handler) EditUser(c *gin.Context) {
 
 //Редактировать данные Админа
 func (h *Handler) EditAdmin(c *gin.Context) {
+	
 	//Новые данные с запроса
 	var reqUser structures.User
 	if err := c.BindJSON(&reqUser); err != nil {
 		NewErrorResponse(c, http.StatusBadGateway, err.Error())
 		return
 	}
-
+	
 	err := h.services.EditAdmin(reqUser)
 	if err != nil {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())

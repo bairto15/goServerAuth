@@ -25,8 +25,20 @@ func (h *Handler) Auth(c *gin.Context) {
 		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}
+	
+	userId, err := h.services.Autorization.ParseToken(token)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	listUsers, err := h.services.GetUsers(userId)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
+		"listUsers": listUsers,
 	})
 }

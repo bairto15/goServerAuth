@@ -1,8 +1,6 @@
 package service
 
-import (
-	"goServerAuth/structures"
-)
+import "goServerAuth/structures"
 
 //Создания админа
 func (s *AuthService) CreateAdmin(user structures.User) (int, error) {
@@ -29,22 +27,12 @@ func (s *AuthService) GetUser(id int) (structures.User, error) {
 //Изменить данные пользователя
 func (s *AuthService) EditUser(user structures.User) error {
 	user.Password = generatePasswordHash(user.Password)
-	if user.OldPassword == "" {
-		user.OldPassword = user.Password
-		return s.repo.EditUser(user)
-	}
-	user.OldPassword = generatePasswordHash(user.OldPassword)
 	return s.repo.EditUser(user)
 }
 
 //Изменить данные Админа
 func (s *AuthService) EditAdmin(user structures.User) error {
 	user.Password = generatePasswordHash(user.Password)
-	if user.OldPassword == "" {
-		user.OldPassword = user.Password
-		return s.repo.EditAdmin(user)
-	}
-	user.OldPassword = generatePasswordHash(user.OldPassword)
 	return s.repo.EditAdmin(user)
 }
 

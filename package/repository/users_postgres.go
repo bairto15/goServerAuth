@@ -26,16 +26,16 @@ func (r *AuthPostgres) GetUser(id int) (structures.User, error) {
 
 //Изменить данные пользователя
 func (r *AuthPostgres) EditUser(user structures.User) error {
-	query := "UPDATE users SET name=$1, password=$2 WHERE id=$3 AND password=$4"
-	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.OldPassword)
+	query := "UPDATE users SET name=$1, password=$2 WHERE id=$3 AND login=$4"
+	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.Login)
 
 	return err
 }
 
-//Изменить данные админа
+//Изменить данные Админа
 func (r *AuthPostgres) EditAdmin(user structures.User) error {
-	query := "UPDATE admins SET name=$1, password=$2 WHERE id=$3 AND password=$4"
-	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.OldPassword)
+	query := "UPDATE admins SET name=$1, password=$2 WHERE id=$3 AND login=$4"
+	_, err := r.db.Exec(query, user.Name, user.Password, user.Id, user.Login)
 
 	return err
 }
